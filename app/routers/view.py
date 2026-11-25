@@ -48,13 +48,12 @@ async def download(
     store: ShareStore = Depends(get_store),
     files: FileStorage = Depends(get_files),
 ):
-    record = await _load(share_id, store)  # Redis is authoritative, even if the file lingers
+    record = await _load(share_id, store)
     if record.type != "file":
         raise not_found()
     path = files.path_for(share_id)
     if not path.is_file():
         raise not_found()
-    # Always octet-stream + attachment: never let the browser render user uploads.
     return FileResponse(path, filename=record.filename, media_type="application/octet-stream")
 
 

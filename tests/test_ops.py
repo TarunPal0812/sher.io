@@ -72,6 +72,21 @@ async def test_redis_error_returns_503(client, monkeypatch):
     assert r.json()["error"]["code"] == "service_unavailable"
 
 
+async def test_render_memory_fallback(monkeypatch, tmp_path):
+    from app.config import Settings
+    from app.main import create_app
+
+    monkeypatch.setenv("RENDER", "true")
+    monkeypatch.delenv("SHER_REDIS_URL", raising=False)
+    monkeypatch.delenv("REDIS_URL", raising=False)
+
+    s = Settings(_env_file=None, storage_dir=tmp_path / "storage")
+    app = create_app(s)
+    async with app.router.lifespan_context(app):
+        assert app.state.redis is not None
+        assert await app.state.redis.ping() is True
+
+
 def test_id_helpers():
     for n in range(4, 9):
         sid = generate_id(n)

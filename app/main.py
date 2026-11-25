@@ -3,6 +3,7 @@
 import asyncio
 import contextlib
 import logging
+import os
 import time
 import uuid
 from contextlib import asynccontextmanager
@@ -40,12 +41,43 @@ def create_app(settings: Settings | None = None, redis: Redis | None = None) -> 
     async def lifespan(app: FastAPI):
         owns_redis = app.state.redis is None
         if owns_redis:
-            app.state.redis = Redis.from_url(
-                settings.redis_url,
-                decode_responses=True,
-                health_check_interval=30,
-                retry_on_timeout=True,
+            is_render_without_redis = (
+                bool(os.environ.get("RENDER"))
+                and "SHER_REDIS_URL" not in os.environ
+                and "REDIS_URL" not in os.environ
             )
+            if settings.redis_url.startswith("memory://") or is_render_without_redis:
+                import fakeredis.aioredis
+
+                log.info("Using embedded in-memory Redis (fakeredis).")
+                app.state.redis = fakeredis.aioredis.FakeRedis(decode_responses=True)
+            else:
+                extra_kwargs = {}
+                if settings.redis_url.startswith("rediss://"):
+                    extra_kwargs["ssl_cert_reqs"] = None
+                client = Redis.from_url(
+                    settings.redis_url,
+                    decode_responses=True,
+                    health_check_interval=30,
+                    retry_on_timeout=True,
+                    **extra_kwargs,
+                )
+                if settings.redis_url in ("redis://localhost:6379/0", "redis://127.0.0.1:6379/0"):
+                    try:
+                        await asyncio.wait_for(client.ping(), timeout=1.0)
+                        app.state.redis = client
+                    except Exception as exc:
+                        await client.aclose()
+                        import fakeredis.aioredis
+
+                        log.warning(
+                            "Local Redis at %s unreachable (%s). Using embedded in-memory store.",
+                            settings.redis_url,
+                            exc,
+                        )
+                        app.state.redis = fakeredis.aioredis.FakeRedis(decode_responses=True)
+                else:
+                    app.state.redis = client
         task = asyncio.create_task(cleanup_loop(app))
         try:
             yield
@@ -95,5 +127,5 @@ def create_app(settings: Settings | None = None, redis: Redis | None = None) -> 
     app.include_router(share.router)
     app.include_router(view.api)
     app.mount("/static", StaticFiles(directory=STATIC), name="static")
-    app.include_router(view.pages)  # last: "/{share_id}" is a catch-all
+    app.include_router(view.pages)
     return app

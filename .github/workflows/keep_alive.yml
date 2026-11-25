@@ -1,0 +1,40 @@
+name: Keep Alive Render
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Server URL to ping (optional, overrides secret/var)'
+        required: false
+        type: string
+
+jobs:
+  keep-alive:
+    name: Ping Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Service
+        run: |
+          TARGET_URL="${{ inputs.url || secrets.RENDER_APP_URL || vars.RENDER_APP_URL }}"
+
+          if [ -z "$TARGET_URL" ]; then
+            echo "Error: RENDER_APP_URL is not set."
+            echo "Please set RENDER_APP_URL in repository Settings -> Secrets and variables -> Actions (e.g., https://your-app.onrender.com)."
+            exit 1
+          fi
+
+          CLEAN_URL="${TARGET_URL%/}"
+          ENDPOINT="${CLEAN_URL}/healthz"
+
+          echo "Pinging: $ENDPOINT"
+          HTTP_RESPONSE=$(curl -sSL -m 60 -w "\nHTTP_CODE:%{http_code}\nTIME_TOTAL:%{time_total}s" "$ENDPOINT" || true)
+
+          echo "$HTTP_RESPONSE"
+
+          if echo "$HTTP_RESPONSE" | grep -q "HTTP_CODE:200"; then
+            echo "Server responded successfully with 200 OK."
+          else
+            echo "Warning: Did not receive 200 OK (cold start may still be in progress)."
+          fi

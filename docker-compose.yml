@@ -1,7 +1,6 @@
 services:
   redis:
     image: redis:7-alpine
-    # Data is ephemeral by design: no persistence, bounded memory.
     command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "256mb", "--maxmemory-policy", "noeviction"]
     restart: unless-stopped
     ports:

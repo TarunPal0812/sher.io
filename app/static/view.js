@@ -23,7 +23,7 @@ function expired(message) {
 
   if (share.type === "text") {
     $("text-view").classList.remove("hidden");
-    $("content").textContent = share.content;           // textContent: never HTML
+    $("content").textContent = share.content;
     $("copy").onclick = (ev) => copy(share.content, ev.currentTarget);
   } else {
     $("file-view").classList.remove("hidden");

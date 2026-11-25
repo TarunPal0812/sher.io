@@ -95,8 +95,6 @@ async def create_file(
     record = ShareRecord(
         type="file", filename=sanitize_filename(file.filename), size=size, expires_at=expires_at
     )
-    # Reserve the key first, then move the file into place. A live file therefore
-    # always has a live key, which is what makes the cleanup sweeper safe.
     try:
         share_id = await store.reserve(record, ttl, settings.id_length)
     except IdSpaceExhausted:

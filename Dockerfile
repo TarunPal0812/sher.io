@@ -5,7 +5,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 \
     PATH="/srv/.venv/bin:$PATH"
 WORKDIR /srv
 
-# Dependencies first for layer caching. --locked fails the build if uv.lock is stale.
 COPY pyproject.toml uv.lock .python-version ./
 RUN uv sync --locked --no-dev
 
