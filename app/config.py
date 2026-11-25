@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_prefix="SHER_", extra="ignore")
 
     base_url: str = Field(
-        default="http://localhost:8000",
+        default="https://sher-5x0c.onrender.com",
         validation_alias=AliasChoices("SHER_BASE_URL", "RENDER_EXTERNAL_URL", "BASE_URL"),
     )
     redis_url: str = Field(

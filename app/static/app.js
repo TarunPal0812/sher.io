@@ -64,8 +64,9 @@ function showResult(r) {
   $("create-panel").classList.add("hidden");
   $("result-panel").classList.remove("hidden");
   $("ticket-id").textContent = r.id;
-  $("ticket-url").textContent = r.url;
-  $("copy").onclick = (ev) => copy(r.url, ev.currentTarget);
+  const shareUrl = `${location.origin}/${r.id}`;
+  $("ticket-url").textContent = shareUrl;
+  $("copy").onclick = (ev) => copy(shareUrl, ev.currentTarget);
   stopTimer = startCountdown($("timer"), r.ttl_seconds, r.ttl_seconds, () => {
     $("ticket-url").textContent = "This link has expired.";
   });

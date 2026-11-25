@@ -17,13 +17,7 @@ jobs:
     steps:
       - name: Ping Render Service
         run: |
-          TARGET_URL="${{ inputs.url || secrets.RENDER_APP_URL || vars.RENDER_APP_URL }}"
-
-          if [ -z "$TARGET_URL" ]; then
-            echo "Error: RENDER_APP_URL is not set."
-            echo "Please set RENDER_APP_URL in repository Settings -> Secrets and variables -> Actions (e.g., https://your-app.onrender.com)."
-            exit 1
-          fi
+          TARGET_URL="${{ inputs.url || secrets.RENDER_APP_URL || vars.RENDER_APP_URL || 'https://sher-5x0c.onrender.com' }}"
 
           CLEAN_URL="${TARGET_URL%/}"
           ENDPOINT="${CLEAN_URL}/healthz"
