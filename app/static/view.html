@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Shared with you · sher.io</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header><a href="/">sher.io</a></header>
+  <main>
+    <p id="loading" class="lede">Loading…</p>
+
+    <section id="share" class="hidden">
+      <div class="panel">
+        <p class="lede lead-in">Shared with you · <span id="share-id"></span></p>
+        <div id="text-view" class="hidden">
+          <pre class="content" id="content"></pre>
+          <button class="btn" id="copy" type="button">Copy text</button>
+        </div>
+        <div id="file-view" class="hidden">
+          <div class="file">
+            <div><div class="name" id="file-name"></div><div class="meta" id="file-meta"></div></div>
+            <a class="btn" id="download" href="#" download>Download</a>
+          </div>
+        </div>
+        <div class="timer" id="timer">
+          <div class="bar"><div class="fill"></div></div>
+          <p class="text"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="gone" class="hidden">
+      <h1>This link is gone.</h1>
+      <p class="lede" id="gone-text">It never existed or has expired. Ask the sender to create a new one.</p>
+      <a class="btn" href="/">Create your own share</a>
+    </section>
+  </main>
+  <footer>Shares are deleted when the timer ends.</footer>
+  <script type="module" src="/static/view.js"></script>
+</body>
+</html>

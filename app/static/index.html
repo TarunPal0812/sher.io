@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>sher.io: share text or a file for a few minutes</title>
+  <meta name="description" content="Share text or a file with a short link that disappears after 5 or 10 minutes.">
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header><a href="/">sher.io</a></header>
+  <main>
+    <section id="create-panel">
+      <h1>Share text or a file for a few minutes.</h1>
+      <p class="lede">You get a short link. Anyone with it can open the share until the timer runs out, then it's deleted.</p>
+      <form id="create-form" class="panel" novalidate>
+        <div class="tabs" role="tablist" aria-label="What to share">
+          <button type="button" role="tab" data-mode="text" aria-selected="true">Text</button>
+          <button type="button" role="tab" data-mode="file" aria-selected="false">File</button>
+        </div>
+        <div id="text-pane">
+          <label for="text" class="hidden">Text to share</label>
+          <textarea id="text" placeholder="Paste or type something" maxlength="102400"></textarea>
+        </div>
+        <div id="file-pane" class="hidden">
+          <label class="drop" id="drop">
+            <input type="file" id="file">
+            <span id="drop-text">Choose a file or drop it here</span>
+          </label>
+          <p class="lede note">Up to 10 MB.</p>
+        </div>
+        <div class="row">
+          <fieldset>
+            <legend>Keep for</legend>
+            <label class="opt"><input type="radio" name="ttl" value="5" checked> 5 min</label>
+            <label class="opt"><input type="radio" name="ttl" value="10"> 10 min</label>
+          </fieldset>
+          <button class="btn" id="submit" type="submit">Create link</button>
+        </div>
+        <p class="error" id="error" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="result-panel" class="hidden">
+      <div class="panel ticket">
+        <p class="label">Your link</p>
+        <p class="id" id="ticket-id"></p>
+        <p class="url" id="ticket-url"></p>
+        <div class="actions">
+          <button class="btn" id="copy" type="button">Copy link</button>
+          <button class="btn secondary" id="again" type="button">Share something else</button>
+        </div>
+        <div class="timer" id="timer">
+          <div class="bar"><div class="fill"></div></div>
+          <p class="text"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>Shares are deleted when the timer ends. Don't share anything you can't afford to leak.</footer>
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>
